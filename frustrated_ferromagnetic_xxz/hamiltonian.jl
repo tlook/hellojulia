@@ -1,6 +1,6 @@
-include("../quantumbase.jl")
+include("../qubase.jl")
 
-using QuantumBase
+using QuBase
 
 export full_hamiltonian_OB,
     full_hamiltonian_PB,
