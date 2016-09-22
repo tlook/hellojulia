@@ -3,7 +3,8 @@ module QuTypes
 export QuantumType, AbstractState, AbstractOperator,
     Bra, Ket,
     DenseOp, DenseBra, DenseKet,
-    SparseOp, SparseBra, SparseKet
+    SparseOp, SparseBra, SparseKet,
+    rawdata
 
 # Abstract type definitions
 abstract QuantumType
@@ -69,6 +70,46 @@ SparseOp{T<:Number}(mat::SparseMatrixCSC{T, Int64}) = SparseOp{T}(mat)
 DenseOp{T<:Number}(mat::Array{T, 2}) = DenseOp{T}(mat)
 SparseBra{T<:Number}(vec::SparseMatrixCSC{T, Int64}) = SparseBra{T}(vec)
 DenseBra{T<:Number}(vec::Array{T, 2}) = DenseBra{T}(vec)
-SparseKet{T<:Number}(vec::SparseMatrixCSC{T, Int64}) = SparseKet{T}(vec)
+SparseKet{T<:Number}(vec::SparseVector{T, Int64}) = SparseKet{T}(vec)
 DenseKet{T<:Number}(vec::Array{T, 1}) = DenseKet{T}(vec)
+
+# Functions regarding sparsity
+Base.sparse(a::DenseBra) = SparseBra(sparse(a.dat))
+Base.sparse(a::DenseKet) = SparseKet(sparse(a.dat))
+Base.sparse(a::DenseOp) = SparseOp(sparse(a.dat))
+Base.full(a::SparseBra) = DenseBra(full(a.dat))
+Base.full(a::SparseKet) = DenseKet(full(a.dat))
+Base.full(a::SparseOp) = DenseOp(full(a.dat))
+SparseOp(a::DenseOp) = sparse(a)
+SparseBra(a::DenseBra) = sparse(a)
+SparseKet(a::DenseKet) = sparse(a)
+DenseOp(a::SparseOp) = full(a)
+DenseBra(a::SparseBra) = full(a)
+DenseKet(a::SparseKet) = full(a)
+
+# Other redefinitions
+Base.length{T<:QuantumType}(a::T) = length(a.dat)
+Base.size{T<:QuantumType}(a::T) = size(a.dat)
+Base.ndims{T<:QuantumType}(a::T) = ndims(a.dat)
+Base.issparse{T<:QuantumType}(a::T) = issparse(a.dat)
+Base.in{T<:QuantumType}(a::T) = in(a.dat)
+Base.:(==){T<:QuantumType}(a::T, b::T) = a.dat==b.dat # Add bases comparison
+Base.getindex{T<:QuantumType}(a::T, ind::Int...) = getindex(a.dat, ind...)
+Base.getindex{T<:QuantumType}(a::T, ind::Range...) = getindex(a.dat, ind...)
+Base.getindex{T<:QuantumType}(a::T, ind::Vector...) = getindex(a.dat, ind...)
+Base.setindex!{T<:QuantumType}(a::T, X::Number, ind::Int...) = setindex!(a.dat, X, ind...)
+Base.setindex!{T<:QuantumType}(a::T, X::T, ind::Range...) = setindex!(a.dat, X.dat, ind...)
+Base.setindex!{T<:QuantumType}(a::T, X::T, ind::Vector...) = setindex!(a.dat, X.dat, ind...)
+Base.copy{T<:QuantumType}(a::T) = T(copy(a.dat))
+Base.summary{T<:AbstractOperator}(a::T) = "$(size(a.dat)[1])x$(size(a.dat)[2]) $T"
+Base.summary{T<:Bra}(a::T) = "Length $(size(a.dat)[2]) $T"
+Base.summary{T<:Ket}(a::T) = "Length $(size(a.dat)[1]) $T"
+function Base.show(io::IO, X::QuantumType)
+    println(io, summary(X))
+    print(io, X.dat)
+end
+rawdata{T<:QuantumType}(a::T) = a.dat
+
+# Promotion rules
+
 end
