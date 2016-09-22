@@ -8,34 +8,34 @@ export init,
 
 
 # Functions
-"""
-    init(S)
-
-Initializes calculations by computing Sx, Sy and Sz. All calculations
-are done in the z-basis.
-Returns sparse matrices.
-"""
-function init(S::Float64)
-    dim = Int(round(2 * S + 1))
-    S_plus = zeros(dim, dim)
-    for i in range(-S, Int(round(2S)))
-        m = -i - 1
-        ind = Int(i + S + 1)
-        S_plus[ind, ind + 1] = √(S * (S + 1) - m * (m + 1))
-    end
-    S_minus = transpose(S_plus)
-
-    # Create Sx, Sy and Sz
-    Sx = 0.5 * (S_plus + S_minus)
-    Sy = -0.5im * (S_plus - S_minus)
-    Sz = zeros(dim, dim)
-    for i in S:-1:-S
-        ind = dim - Int(round((i + S)))
-        Sz[ind, ind] = i
-    end
-    return Sx, Sy, Sz
-end
-
+# """
+#     init(S)
+# 
+# Initializes calculations by computing Sx, Sy and Sz. All calculations
+# are done in the z-basis.
+# Returns sparse matrices.
+# """
+# function init(S::Float64)
+#     dim = Int(round(2 * S + 1))
+#     S_plus = zeros(dim, dim)
+#     for i in range(-S, Int(round(2S)))
+#         m = -i - 1
+#         ind = Int(i + S + 1)
+#         S_plus[ind, ind + 1] = √(S * (S + 1) - m * (m + 1))
+#     end
+#     S_minus = transpose(S_plus)
+# 
+#     # Create Sx, Sy and Sz
+#     Sx = 0.5 * (S_plus + S_minus)
+#     Sy = -0.5im * (S_plus - S_minus)
+#     Sz = zeros(dim, dim)
+#     for i in S:-1:-S
+#         ind = dim - Int(round((i + S)))
+#         Sz[ind, ind] = i
+#     end
+#     return Sx, Sy, Sz
+# end
+# 
 function full_matrix_core(S::SparseMatrixCSC, k::Int64, N::Int64)
     D = size(S)[1]  # Dimensions of the operator/state vector.
     if k == 1
