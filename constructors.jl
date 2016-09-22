@@ -1,9 +1,9 @@
 module constructors
 
-include("./quantumtypes.jl")
-include("./qmmath.jl")
+include("./qutypes.jl")
+include("./qumath.jl")
 importall Qutypes
-importall QMMath
+importall QuMath
 
 export qzeros, qspzeros, qones, qspones, qeye, qspeye,
     splus, sminus, sigmax, sigmay, sigmaz
@@ -72,7 +72,7 @@ end
 """
     splus(S)
 
-Creates the S+ operator in the z basis
+Creates the raising operator (without ħ) in the z basis
 """
 function splus(S::Float64)
     dim = Int(round(2 * S + 1))
@@ -89,7 +89,7 @@ end
 """
     sminus(S)
 
-Creates the S- operator in the z basis
+Creates the lowering operator (without ħ) in the z basis
 """
 function sminus(S::Float64)
     return ctranspose(splus(S))
@@ -99,7 +99,7 @@ end
 """
     sigmax(S)
 
-Creates the Sx operator in the z basis
+Creates the first Pauli spin operator in the z basis
 """
 function sigmax(S::Float64)
     Splus = splus(S)
@@ -111,7 +111,7 @@ end
 """
     sigmay(S)
 
-Creates the Sy operator in the z basis
+Creates the second Pauli spin operator in the z basis
 """
 function sigmay(S::Float64)
     Splus = splus(S)
@@ -123,7 +123,7 @@ end
 """
     sigmaz(S)
 
-Creates the Sz operator in the z basis
+Creates the third Pauli spin operator in the z basis
 """
 function sigmaz(S::Float64)
     Sz = qzeros(dim, dim)
