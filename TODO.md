@@ -4,10 +4,8 @@
 - [x] Create basic types
     - [x] DenseOp
     - [x] SparseOp
-    - [x] DenseBra
-    - [x] SparseBra
-    - [x] DenseKet
-    - [x] SparseKet
+    - [x] Bra
+    - [x] Ket
     
     Food for thought: Do bras and kets need to be sparse on any occasion? How would that change affect everything else? \(That is, do we need a separate type for dense and sparse vectors or should only have dense vectors\)
     - 1. Have only dense vectors and have dense/sparse operator multiplication with such vectors return also dense vectors. There are performance advantages in using dense matrices when sparse matrices are not strictly necessary. \(Matrix operations are quite a bit faster by using a dense matrix if the matrix isn't too sparse. The general rule is, use sparse matrix only when sparsity is higher than 75% unless there are memory constraints.\)
@@ -34,7 +32,11 @@
     - [x] Base.setindex!
     - [x] Base.copy
     - [x] Base.summary
-    - [x] Base.show
+    - [ ] Base.show
+        - Need to create a show function for each type separately to cater to different ways of display
+    - [ ] Base.print
+    - [ ] Base.writelm
+        - Save a state/operator to a text file
 - [ ] Create promotion functions/definitions
     - [ ] Scenario 1: For an operation between two objects, one object contains a different number type than the other. Int ⇒ Float ⇒ Complex
     - [ ] Scenario 2: (Maybe) For a basic mathematical operation \(+. -. *, /\) between a QuType and a built-in array like type, promote the built-in array type to a QuType
@@ -47,7 +49,8 @@ Note: the current getindex doesn't fully work as it returns slices in arrays/spa
     - [x] -
     - [x] *
     - [x] /
-    - [ ] ^
+    - [ ] %
+    - [x] ^
     - [x] ⊗
     - [x] Correct error messages to be displayed with dimension mismatch
 - [ ] Element wise functions for non-QuTypes x QuTypes
@@ -69,7 +72,6 @@ Note: the current getindex doesn't fully work as it returns slices in arrays/spa
     - [x] qzeros
     - [x] qspzeros
     - [x] qones
-    - [x] qspones
     - [x] qeye
     - [x] qspeye
 - [x] Constructors of basic spin system operators
