@@ -1,14 +1,9 @@
-module QuMath
-
-# TODO: Test/fix the eig and eigs functions
-# TODO: Implement expm and ^
-
-include("./qutypes.jl")
-
 export ⊗
 
-importall QuTypes
-import Base: +, -, *, /
+import Base: +, -, *, /, ^
+
+# TODO: Test/fix the eig and eigs functions
+# TODO: Implement expm
 
 # Define common mathematical operations for our custom types
 # Addition
@@ -47,21 +42,13 @@ end
 
 # Multiplication
 # scalar * QuantumType
-*{T<:QuantumType}(a::Number, b::T) = T(a * b.dat)
+*{sT<:Number, T<:QuantumType}(a::sT, b::T) = T{sT}(a * b.dat)
 
 # QuantumType * scalar
 *{T<:QuantumType}(a::T, b::Number) = T(a.dat * b)
 
 # bra * ket = scalar
-function *(a::DenseBra, b::DenseKet)
-    if length(a) ≠ length(b)
-        error("Dimension mismatch: a has length $(length(a)) while b has length $(length(b))")
-    else
-        return (a.dat * b.dat)[1]
-    end
-end
-
-function *(a::SparseBra, b::SparseKet)
+function *(a::Bra, b::Ket)
     if length(a) ≠ length(b)
         error("Dimension mismatch: a has length $(length(a)) while b has length $(length(b))")
     else
@@ -70,40 +57,23 @@ function *(a::SparseBra, b::SparseKet)
 end
 
 # ket * bra = operator
-*(a::DenseKet, b::DenseBra) = DenseOp(a.dat * b.dat)
-*(a::SparseKet, b::SparseBra) = SparseOp(a.dat * b.dat)
+*(a::Ket, b::Bra) = DenseOp(a.dat * b.dat)
 
 # operator * ket = ket
-function *(a::DenseOp, b::DenseKet)
+function *(a::AbstractOperator, b::Ket)
     if size(a)[2] ≠ length(b)
         error("Dimension mismatch: a has dimensions $(size(a)[1])x$(size(a)[2]) while b has length $(length(b))")
     else
-        return DenseKet(a.dat * b.dat)
-    end
-end
-
-function *(a::SparseOp, b::SparseKet)
-    if size(a)[2] ≠ length(b)
-        error("Dimension mismatch: a has dimensions $(size(a)[1])x$(size(a)[2]) while b has length $(length(b))")
-    else
-        return SparseKet(a.dat * b.dat)
+        return Ket(a.dat * b.dat)
     end
 end
 
 # bra * operator = bra
-function *(a::DenseBra, b::DenseOp)
+function *(a::Bra, b::AbstractOperator)
     if length(a) ≠ size(b)[1]
         error("Dimension mismatch: a has length $(length(a)) while b has dimensions $(size(b)[1])x$(size(b)[2])")
     else
-        return DenseBra(a.dat * b.dat)
-    end
-end
-
-function *(a::SparseBra, b::SparseOp)
-    if length(a) ≠ size(b)[1]
-        error("Dimension mismatch: a has length $(length(a)) while b has dimensions $(size(b)[1])x$(size(b)[2])")
-    else
-        return SparseBra(a.dat * b.dat)
+        return Bra(a.dat * b.dat)
     end
 end
 
@@ -120,6 +90,15 @@ end
 # QuantumType / scalar
 /{T<:QuantumType}(a::T, b::Number) = T(a.dat / b)
 
+# Power
+function ^{T<:AbstractOperator}(a::T, n::Number)
+    if size(a)[1] ≠ size(a)[2]
+        error("Not a square operator")
+    else
+        return T(a.dat^n)
+    end
+end
+
 # Kron
 ⊗{T<:QuantumType}(a::T, b::T) = T(kron(a.dat, b.dat))
 
@@ -129,5 +108,3 @@ Base.norm{T<:QuantumType}(a::T) = norm(a.dat)
 # Math functions such as eig
 Base.eig(op::DenseOp) = eig(op.dat)
 Base.eigs(op::SparseOp) = eigs(op.dat)
-
-end
