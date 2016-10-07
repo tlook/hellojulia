@@ -1,11 +1,4 @@
-module constructors
-
-include("./qutypes.jl")
-include("./qumath.jl")
-importall Qutypes
-importall QuMath
-
-export qzeros, qspzeros, qones, qspones, qeye, qspeye,
+export qzeros, qspzeros, qones, qspones, qeye,
     splus, sminus, sigmax, sigmay, sigmaz
 
 
@@ -40,16 +33,6 @@ end
 
 
 """
-    qspones(m, n)
-
-Creates a sparse ones operator.
-"""
-function qspones(m::Int64, n::Int64)
-    return SparseOp(spones(m, n))
-end
-
-
-"""
     qeye(d)
 
 Creates an identity operator.
@@ -65,7 +48,7 @@ end
 Creates a sparse identity operator.
 """
 function qspeye(d::Int64)
-    return SparseOp(eye(d))
+    return SparseOp(speye(d))
 end
 
 
@@ -126,6 +109,7 @@ end
 Creates the third Pauli spin operator in the z basis
 """
 function sigmaz(S::Float64)
+    dim = Int(round(2 * S + 1))
     Sz = qzeros(dim, dim)
     for i in S:-1:-S
         ind = dim - Int(round((i + S)))
