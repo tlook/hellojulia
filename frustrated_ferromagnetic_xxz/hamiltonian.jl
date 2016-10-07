@@ -15,14 +15,14 @@ export full_hamiltonian_OB,
 Creates lists of full operators for the Hamiltonian.
 """
 function full_operators(N)
-    Sx, Sy, Sz = QuantumBase.init(0.5)
+    Sx, Sy, Sz = sigmax(N), sigmay(N), sigmaz(N)
     Sx_ls = []
     Sy_ls = []
     Sz_ls = []
     for l in 1:N
-        push!(Sx_ls, QuantumBase.full_matrix(Sx, l, N))
-        push!(Sy_ls, QuantumBase.full_matrix(Sy, l, N))
-        push!(Sz_ls, QuantumBase.full_matrix(Sz, l, N))
+        push!(Sx_ls, full_matrix(Sx, l, N))
+        push!(Sy_ls, full_matrix(Sy, l, N))
+        push!(Sz_ls, full_matrix(Sz, l, N))
     end
     return Sx_ls, Sy_ls, Sz_ls
 end
